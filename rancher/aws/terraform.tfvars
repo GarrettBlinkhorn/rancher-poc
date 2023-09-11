@@ -1,21 +1,18 @@
 
-# DigitalOcean API token used to create infrastructure
-do_token = ""
+# AWS region used for all resources
+aws_region = "eu-west-1"
 
-# Admin password to use for Rancher server bootstrap, min. 12 characters
-rancher_server_admin_password = ""
+# AWS zone used for all resources
+aws_zone = "eu-west-1a"
 
 # Version of cert-manager to install alongside Rancher (format: 0.0.0)
 cert_manager_version = "1.11.0"
 
-# DigitalOcean region used for all resources
-do_region = "nyc1"
-
-# Droplet size used for all droplets
-droplet_size = "s-2vcpu-4gb"
+# Instance type used for all EC2 instances
+instance_type = "t3a.medium"
 
 # Prefix added to names of all resources
-prefix = "quickstart"
+prefix = "rancher-poc"
 
 # The helm repository, where the Rancher helm chart is installed from
 rancher_helm_repository = "https://releases.rancher.com/server-charts/latest"
@@ -25,6 +22,12 @@ rancher_kubernetes_version = "v1.24.14+k3s1"
 
 # Rancher server version (format: v0.0.0)
 rancher_version = "2.7.5"
+
+# Add a windows node to the workload cluster
+add_windows_node = false
+
+# Instance type used for all EC2 windows instances
+windows_instance_type = "t3a.large"
 
 # Kubernetes version to use for managed workload cluster
 workload_kubernetes_version = "v1.24.14+rke2r1"

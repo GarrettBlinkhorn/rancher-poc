@@ -17,8 +17,9 @@ terraform {
 }
 
 provider "aws" {
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
-  token      = var.aws_session_token
+  assume_role {
+    role_arn     = "arn:aws:iam::048347064338:role/cicd-dev-admin"
+    session_name = "RancherPOC"
+  }
   region     = var.aws_region
 }

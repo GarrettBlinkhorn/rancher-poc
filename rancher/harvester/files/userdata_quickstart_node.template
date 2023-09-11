@@ -1,1 +1,0 @@
-${register_command} --etcd --controlplane --worker

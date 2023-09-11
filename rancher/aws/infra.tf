@@ -67,17 +67,17 @@ resource "aws_route_table_association" "rancher_route_table_association" {
   route_table_id = aws_route_table.rancher_route_table.id
 }
 
-# Security group to allow all traffic
-resource "aws_security_group" "rancher_sg_allowall" {
-  name        = "${var.prefix}-rancher-allowall"
-  description = "Rancher quickstart - allow all traffic"
+# Security group to restrict traffic
+resource "aws_security_group" "rancher_sg" {
+  name        = "${var.prefix}-rancher-sg"
+  description = "Rancher quickstart - Traffic restrictions"
   vpc_id      = aws_vpc.rancher_vpc.id
 
   ingress {
     from_port   = "0"
     to_port     = "0"
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["10.77.117.139/32"]
   }
 
   egress {
@@ -88,7 +88,7 @@ resource "aws_security_group" "rancher_sg_allowall" {
   }
 
   tags = {
-    Creator = "rancher-quickstart"
+    Creator = "rancher-poc"
   }
 }
 
@@ -101,7 +101,7 @@ resource "aws_instance" "rancher_server" {
   instance_type = var.instance_type
 
   key_name                    = aws_key_pair.quickstart_key_pair.key_name
-  vpc_security_group_ids      = [aws_security_group.rancher_sg_allowall.id]
+  vpc_security_group_ids      = [aws_security_group.rancher_sg.id]
   subnet_id                   = aws_subnet.rancher_subnet.id
   associate_public_ip_address = true
 
@@ -126,7 +126,7 @@ resource "aws_instance" "rancher_server" {
 
   tags = {
     Name    = "${var.prefix}-rancher-server"
-    Creator = "rancher-quickstart"
+    Creator = "rancher-poc"
   }
 }
 
@@ -161,7 +161,7 @@ resource "aws_instance" "quickstart_node" {
   instance_type = var.instance_type
 
   key_name                    = aws_key_pair.quickstart_key_pair.key_name
-  vpc_security_group_ids      = [aws_security_group.rancher_sg_allowall.id]
+  vpc_security_group_ids      = [aws_security_group.rancher_sg.id]
   subnet_id                   = aws_subnet.rancher_subnet.id
   associate_public_ip_address = true
 
@@ -193,6 +193,6 @@ resource "aws_instance" "quickstart_node" {
 
   tags = {
     Name    = "${var.prefix}-quickstart-node"
-    Creator = "rancher-quickstart"
+    Creator = "rancher-poc"
   }
 }
