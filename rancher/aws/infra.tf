@@ -113,7 +113,7 @@ module "rancher_common" {
 }
 
 # AWS EC2 instance for creating a single node workload cluster
-resource "aws_instance" "quickstart_node" {
+/* resource "aws_instance" "quickstart_node" {
   ami           = data.aws_ami.sles.id
   instance_type = var.instance_type
 
@@ -152,4 +152,4 @@ resource "aws_instance" "quickstart_node" {
     Name    = "${var.prefix}-workload-cluster"
     Creator = "rancher-poc"
   }
-}
+} */
