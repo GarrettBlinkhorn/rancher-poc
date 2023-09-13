@@ -36,6 +36,7 @@ resource "aws_security_group" "rancher_sg" {
   description = "Rancher quickstart - Traffic restrictions"
   vpc_id      = data.aws_vpc.cicd-dev.id
 
+  # Wireguard Tunnel IPs go here to enable access
   ingress {
     from_port   = "0"
     to_port     = "0"
