@@ -1,4 +1,3 @@
-
 # AWS region used for all resources
 aws_region = "eu-west-1"
 
@@ -22,12 +21,6 @@ rancher_kubernetes_version = "v1.24.14+k3s1"
 
 # Rancher server version (format: v0.0.0)
 rancher_version = "2.7.5"
-
-# Add a windows node to the workload cluster
-add_windows_node = false
-
-# Instance type used for all EC2 windows instances
-windows_instance_type = "t3a.large"
 
 # Kubernetes version to use for managed workload cluster
 workload_kubernetes_version = "v1.24.14+rke2r1"

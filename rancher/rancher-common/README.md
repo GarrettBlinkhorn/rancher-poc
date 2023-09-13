@@ -65,6 +65,5 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_custom_cluster_command"></a> [custom\_cluster\_command](#output\_custom\_cluster\_command) | Docker command used to add a node to the quickstart cluster |
-| <a name="output_custom_cluster_windows_command"></a> [custom\_cluster\_windows\_command](#output\_custom\_cluster\_windows\_command) | Docker command used to add a windows node to the quickstart cluster |
 | <a name="output_rancher_url"></a> [rancher\_url](#output\_rancher\_url) | n/a |
 <!-- END_TF_DOCS -->

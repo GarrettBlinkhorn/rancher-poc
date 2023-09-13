@@ -24,12 +24,6 @@ variable "instance_type" {
   default     = "t3a.medium"
 }
 
-variable "windows_instance_type" {
-  type        = string
-  description = "Instance type used for all EC2 windows instances"
-  default     = "t3a.large"
-}
-
 variable "rancher_kubernetes_version" {
   type        = string
   description = "Kubernetes version to use for Rancher server cluster"
@@ -66,12 +60,7 @@ variable "rancher_server_admin_password" {
   description = "Admin password to use for Rancher server bootstrap, min. 12 characters"
 }
 
-# Required
-variable "add_windows_node" {
-  type        = bool
-  description = "Add a windows node to the workload cluster"
-  default     = false
-}
+
 
 # Local variables used to reduce repetition
 locals {

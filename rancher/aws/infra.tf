@@ -22,56 +22,19 @@ resource "aws_key_pair" "quickstart_key_pair" {
   public_key      = tls_private_key.global_key.public_key_openssh
 }
 
-resource "aws_vpc" "rancher_vpc" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = true
-  tags = {
-    Name = "${var.prefix}-rancher-vpc"
-  }
-}
+data "aws_vpc" "cicd-dev" {
+  id = "vpc-0aa5c8e3b8ff064cf"
+} 
 
-resource "aws_internet_gateway" "rancher_gateway" {
-  vpc_id = aws_vpc.rancher_vpc.id
-
-  tags = {
-    Name = "${var.prefix}-rancher-gateway"
-  }
-}
-
-resource "aws_subnet" "rancher_subnet" {
-  vpc_id = aws_vpc.rancher_vpc.id
-
-  cidr_block        = "10.0.0.0/24"
-  availability_zone = var.aws_zone
-
-  tags = {
-    Name = "${var.prefix}-rancher-subnet"
-  }
-}
-
-resource "aws_route_table" "rancher_route_table" {
-  vpc_id = aws_vpc.rancher_vpc.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.rancher_gateway.id
-  }
-
-  tags = {
-    Name = "${var.prefix}-rancher-route-table"
-  }
-}
-
-resource "aws_route_table_association" "rancher_route_table_association" {
-  subnet_id      = aws_subnet.rancher_subnet.id
-  route_table_id = aws_route_table.rancher_route_table.id
+data "aws_subnet" "cicd-dev-private-eu-west-1b" {
+  id = "subnet-072ca06b31be3523f"
 }
 
 # Security group to restrict traffic
 resource "aws_security_group" "rancher_sg" {
   name        = "${var.prefix}-rancher-sg"
   description = "Rancher quickstart - Traffic restrictions"
-  vpc_id      = aws_vpc.rancher_vpc.id
+  vpc_id      = data.aws_vpc.cicd-dev.id
 
   ingress {
     from_port   = "0"
@@ -94,15 +57,12 @@ resource "aws_security_group" "rancher_sg" {
 
 # AWS EC2 instance for creating a single node RKE cluster and installing the Rancher server
 resource "aws_instance" "rancher_server" {
-  depends_on = [
-    aws_route_table_association.rancher_route_table_association
-  ]
   ami           = data.aws_ami.sles.id
   instance_type = var.instance_type
 
   key_name                    = aws_key_pair.quickstart_key_pair.key_name
   vpc_security_group_ids      = [aws_security_group.rancher_sg.id]
-  subnet_id                   = aws_subnet.rancher_subnet.id
+  subnet_id                   = data.aws_subnet.cicd-dev-private-eu-west-1b.id
   associate_public_ip_address = true
 
   root_block_device {
@@ -118,14 +78,14 @@ resource "aws_instance" "rancher_server" {
 
     connection {
       type        = "ssh"
-      host        = self.public_ip
+      host        = self.private_ip
       user        = local.node_username
       private_key = tls_private_key.global_key.private_key_pem
     }
   }
 
   tags = {
-    Name    = "${var.prefix}-rancher-server"
+    Name    = "${var.prefix}-management-server"
     Creator = "rancher-poc"
   }
 }
@@ -144,25 +104,22 @@ module "rancher_common" {
   rancher_version         = var.rancher_version
   rancher_helm_repository = var.rancher_helm_repository
 
-  rancher_server_dns = join(".", ["rancher", aws_instance.rancher_server.public_ip, "sslip.io"])
+  rancher_server_dns = join(".", ["rancher", aws_instance.rancher_server.private_ip, "sslip.io"])
 
   admin_password = var.rancher_server_admin_password
 
   workload_kubernetes_version = var.workload_kubernetes_version
-  workload_cluster_name       = "quickstart-aws-custom"
+  workload_cluster_name       = "rancher-poc-workload-cluster"
 }
 
 # AWS EC2 instance for creating a single node workload cluster
 resource "aws_instance" "quickstart_node" {
-  depends_on = [
-    aws_route_table_association.rancher_route_table_association
-  ]
   ami           = data.aws_ami.sles.id
   instance_type = var.instance_type
 
   key_name                    = aws_key_pair.quickstart_key_pair.key_name
   vpc_security_group_ids      = [aws_security_group.rancher_sg.id]
-  subnet_id                   = aws_subnet.rancher_subnet.id
+  subnet_id                   = data.aws_subnet.cicd-dev-private-eu-west-1b.id
   associate_public_ip_address = true
 
   root_block_device {
@@ -185,14 +142,14 @@ resource "aws_instance" "quickstart_node" {
 
     connection {
       type        = "ssh"
-      host        = self.public_ip
+      host        = self.private_ip
       user        = local.node_username
       private_key = tls_private_key.global_key.private_key_pem
     }
   }
 
   tags = {
-    Name    = "${var.prefix}-quickstart-node"
+    Name    = "${var.prefix}-workload-cluster"
     Creator = "rancher-poc"
   }
 }
